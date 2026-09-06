@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="MF Event Timer">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>Multimedia Focus Event Timer</title>
+<style>
+:root{--bg:#000;--fg:#fff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+body{min-height:100vh;min-height:100dvh;overflow:auto}.app{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:min(100%,900px);text-align:center}.header{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:.18em;opacity:.55;text-align:left}.state{font-size:14px;font-weight:700;margin-top:4px;text-align:left}.adjust{display:flex;gap:8px}
+button{min-height:48px;border-radius:11px;padding:10px 17px;font:inherit;font-size:16px;font-weight:750;cursor:pointer;touch-action:manipulation}
+.dark{background:transparent;color:var(--fg);border:1px solid rgba(255,255,255,.4)}.light{background:var(--fg);color:var(--bg);border:1px solid var(--fg)}
+.display{border:1px solid rgba(255,255,255,.22);border-radius:18px;padding:48px 12px 34px;background:var(--bg)}
+.digits{font-size:clamp(80px,20vw,220px);font-weight:750;line-height:.86;letter-spacing:-.065em;font-variant-numeric:tabular-nums}
+.warning{font-size:13px;font-weight:800;letter-spacing:.14em;opacity:.5;margin-top:20px}.presets{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+.main{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.presentation{width:100%;margin-top:10px}
+details{margin-top:16px;border-top:1px solid rgba(255,255,255,.22);padding-top:12px;text-align:left}summary{cursor:pointer;font-weight:750;padding:8px 0}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}label{display:block;font-size:11px;font-weight:800;letter-spacing:.05em;opacity:.65;margin-bottom:6px}
+input{width:100%;height:46px;border-radius:9px;border:1px solid #777;background:#111;color:#fff;padding:8px 10px;font-size:16px}input[type=color]{padding:3px}.apply{grid-column:1/-1;width:100%}
+.message{font-size:12px;min-height:18px;opacity:.7;margin-top:8px;text-align:center}
+@media(max-width:650px){.presets{grid-template-columns:repeat(3,1fr)}.settings{grid-template-columns:1fr}.apply{grid-column:auto}.header{align-items:flex-start}}
+@media(max-width:420px){.presets{grid-template-columns:repeat(2,1fr)}.app{padding:16px}.display{padding:38px 8px 28px}}
+</style>
+</head>
+<body>
+<main class="app" id="app"><section class="card">
+<div class="header" id="header"><div><div class="eyebrow" id="modeLabel">EVENT COUNTDOWN</div><div class="state" id="state">READY</div></div>
+<div class="adjust"><button class="dark" id="minus" type="button">−30s</button><button class="dark" id="plus" type="button">+30s</button></div></div>
+<div class="display"><div class="digits" id="digits" aria-live="polite">10:00</div><div class="warning" id="warning">10 MINUTES</div></div>
+<div class="presets" id="presets">
+<button class="dark preset" data-seconds="300" type="button">5:00</button><button class="dark preset" data-seconds="600" type="button">10:00</button><button class="dark preset" data-seconds="900" type="button">15:00</button><button class="dark preset" data-seconds="1200" type="button">20:00</button><button class="dark preset" data-seconds="1800" type="button">30:00</button>
+<button class="dark preset" data-seconds="2700" type="button">45:00</button><button class="dark preset" data-seconds="3600" type="button">60:00</button><button class="dark preset" data-seconds="4500" type="button">75:00</button><button class="dark preset" data-seconds="5400" type="button">90:00</button><button class="dark" id="clock" type="button">TIME OF DAY</button>
+</div>
+<div class="main" id="mainButtons"><button class="light" id="start" type="button">START</button><button class="dark" id="reset" type="button">RESET</button></div>
+<button class="dark presentation" id="presentation" type="button">PRESENTATION MODE</button>
+<details id="settingsPanel"><summary>Customize Timer</summary><div class="settings">
+<div><label for="minutes">COUNTDOWN TIME (MINUTES)</label><input id="minutes" type="number" min="0" max="9999" step="0.01" value="10"></div>
+<div><label for="bg">BACKGROUND COLOR</label><input id="bg" type="color" value="#000000"></div>
+<div><label for="fg">TEXT COLOR</label><input id="fg" type="color" value="#ffffff"></div>
+<button class="light apply" id="apply" type="button">APPLY SETTINGS</button></div><div class="message" id="message"></div></details>
+</section></main>
+<script>
+(()=>{let remaining=600,running=false,clockMode=false,last=0,raf=null,clockInterval=null,presentation=false;
+const $=id=>document.getElementById(id),digits=$("digits"),state=$("state"),warning=$("warning"),start=$("start"),minutes=$("minutes"),clock=$("clock"),modeLabel=$("modeLabel");
+function fmt(s){s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function showClock(){const n=new Date(),h=n.getHours()%12||12,m=n.getMinutes();digits.textContent=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");modeLabel.textContent="TIME OF DAY";state.textContent="CURRENT TIME";warning.textContent="TIME OF DAY"}
+function render(){if(clockMode){showClock();return}modeLabel.textContent="EVENT COUNTDOWN";digits.textContent=fmt(remaining);state.textContent=remaining<=0?"TIME":running?"RUNNING":"READY";start.textContent=running?"PAUSE":"START";const s=Math.ceil(remaining);warning.textContent=s<=0?"TIME":s<=30?"FINAL 30 SECONDS":s<=60?"1 MINUTE REMAINING":Math.ceil(s/60)+" MINUTES"}
+function stop(){running=false;if(raf)cancelAnimationFrame(raf);raf=null;last=0;render()}
+function tick(t){if(!running||clockMode)return;if(!last)last=t;remaining=Math.max(0,remaining-(t-last)/1000);last=t;render();if(remaining<=0){stop();return}raf=requestAnimationFrame(tick)}
+function exitClock(){clockMode=false;if(clockInterval)clearInterval(clockInterval);clockInterval=null;clock.textContent="TIME OF DAY";render()}
+start.onclick=()=>{if(clockMode||remaining<=0)return;running=!running;last=0;if(running)raf=requestAnimationFrame(tick);else if(raf)cancelAnimationFrame(raf);render()};
+$("reset").onclick=()=>{exitClock();stop();remaining=600;minutes.value="10";render()};
+$("minus").onclick=()=>{if(!clockMode){remaining=Math.max(0,remaining-30);render()}};
+$("plus").onclick=()=>{if(!clockMode){remaining=Math.min(599999,remaining+30);render()}};
+document.querySelectorAll(".preset").forEach(b=>b.onclick=()=>{exitClock();stop();remaining=Number(b.dataset.seconds);minutes.value=String(remaining/60);render()});
+clock.onclick=()=>{if(clockMode){exitClock()}else{stop();clockMode=true;clock.textContent="BACK TO COUNTDOWN";showClock();clockInterval=setInterval(showClock,1000)}};
+$("apply").onclick=()=>{let n=Number(minutes.value);if(!Number.isFinite(n)||n<0)n=10;n=Math.min(9999,n);minutes.value=String(n);exitClock();stop();remaining=n*60;document.documentElement.style.setProperty("--bg",$("bg").value);document.documentElement.style.setProperty("--fg",$("fg").value);$("message").textContent="Settings applied.";setTimeout(()=>$("message").textContent="",1800);render()};
+$("presentation").onclick=()=>{presentation=!presentation;$("header").style.display=presentation?"none":"flex";$("presets").style.display=presentation?"none":"grid";$("mainButtons").style.display=presentation?"none":"grid";$("settingsPanel").style.display=presentation?"none":"block";$("presentation").textContent=presentation?"EXIT PRESENTATION MODE":"PRESENTATION MODE"};
+if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+render();
+})();
+</script>
+</body></html>
