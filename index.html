@@ -1,384 +1,207 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>MMF Timer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<title>MMF TIMER</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;touch-action:pan-x pan-y pinch-zoom}
-body{padding:8px 12px}
-.app{width:100%;max-width:1200px;height:100%;margin:auto}
-.top{height:74px;display:flex;justify-content:space-between;align-items:flex-start}
-.brandMMF{font-family:Arial Black,Arial,sans-serif;font-size:34px;font-weight:900;line-height:.8;letter-spacing:-2px}
-.brandTimer{font-family:Arial Black,Arial,sans-serif;font-size:16px;font-weight:900;letter-spacing:5px;margin-top:4px;line-height:.8}
-.brandCompany{font-family:Arial Black,Arial,sans-serif;font-size:11px;font-weight:900;letter-spacing:1.4px;margin-top:7px}
-.adjust{display:flex;gap:12px}
-.btn{appearance:none;-webkit-appearance:none;background:#050505;color:#fff;border:2px solid #ddd;border-radius:14px;font-family:Arial Black,Arial,sans-serif;font-weight:900;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.btn:active{transform:scale(.98)}
-.adjust .btn{width:92px;height:56px;font-size:18px}
-.display{height:310px;width:100%;border:2px solid #ddd;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;margin-bottom:10px}
-.timer{font-family:Arial Black,Arial,sans-serif;font-weight:900;font-size:clamp(115px,16vw,230px);line-height:.8;letter-spacing:-7px;white-space:nowrap;color:#fff}
-.message{display:none;width:100%;height:100%;padding:5px;align-items:center;justify-content:center;overflow:hidden}
-.messageLines{width:100%;text-align:center;font-family:Arial Black,Arial,sans-serif;font-weight:900;line-height:.9}
-.messageLines div{white-space:nowrap}
-.minutes{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px}
-.minutes .btn{height:48px;font-size:17px}
-.mainControls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
-.mainControls .btn{height:64px;font-size:27px}
-#start{border:4px solid #00e84f;background:#003d16}
-#reset{border:4px solid #ff2028;background:#400000}
-.custom{border-top:1px solid #777;padding-top:6px}
-.customHeader{font-size:16px;font-weight:900;margin-bottom:6px;cursor:pointer}
-.customBody{border:2px solid #555;border-radius:13px;padding:10px}
-.settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:9px}
-.field label,.speaker label{display:block;font-size:13px;font-weight:900;margin-bottom:3px}
-.field input[type=number]{width:100%;padding:8px;background:#050505;color:#fff;border:2px solid #777;border-radius:10px;font-size:16px}
-.field input[type=color]{width:48px;height:38px;background:#050505;border:2px solid #777;border-radius:10px}
-.speakerRow{display:grid;grid-template-columns:1fr auto auto;gap:8px}
-.speakerRow input{width:100%;padding:9px;background:#050505;color:#fff;border:2px solid #777;border-radius:10px;font-size:15px}
-.speakerRow .btn{min-width:90px;height:42px;font-size:15px}
-.status{display:none!important}
-@media(max-width:700px) and (orientation:landscape){
- body{padding:6px 10px}
- .top{height:62px}
- .brandMMF{font-size:25px}.brandTimer{font-size:12px;letter-spacing:4px}.brandCompany{font-size:9px;letter-spacing:1px}
- .adjust{gap:7px}.adjust .btn{width:72px;height:44px;font-size:14px}
- .display{height:250px}.timer{font-size:clamp(95px,15vw,200px)}
- .minutes{gap:5px}.minutes .btn{height:42px;font-size:14px}
- .mainControls .btn{height:52px;font-size:21px}
- .customBody{padding:7px}.field label,.speaker label{font-size:11px}.speakerRow input{font-size:13px}
+html,body{margin:0;width:100%;height:100%;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;overflow:hidden}
+body{touch-action:pan-x pan-y pinch-zoom}
+.app{width:100vw;height:100vh;min-height:620px;padding:18px 24px;display:flex;flex-direction:column;gap:12px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;min-height:58px}
+.brand{line-height:1}
+.brand .mmf{font-size:27px;font-weight:900;letter-spacing:1px}
+.brand .timer{font-size:20px;font-weight:900;letter-spacing:3px;margin-top:2px}
+.brand .company{font-size:11px;font-weight:700;letter-spacing:2px;margin-top:6px}
+.adjust{display:flex;gap:10px}
+button{font:inherit;color:#fff;background:#080808;border:1px solid #555;border-radius:9px;cursor:pointer}
+button:active{transform:scale(.98)}
+.adjust button{min-width:76px;height:46px;font-size:17px;font-weight:800}
+.display{flex:1;min-height:245px;border:1px solid #252525;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+#displayText{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 18px;font-weight:900;line-height:.88;letter-spacing:1px;font-size:clamp(100px,18vw,230px);white-space:nowrap}
+.controls{display:flex;justify-content:center;gap:16px}
+.mainBtn{width:210px;height:62px;font-size:23px;font-weight:900}
+.start{background:#19a84a;border-color:#19a84a}
+.reset{background:#d92727;border-color:#d92727}
+.presets{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.preset{height:48px;font-size:15px;font-weight:800}
+.panel{border:1px solid #333;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.panelTitle{font-size:17px;font-weight:900;width:100%}
+label{font-size:13px;font-weight:700}
+input[type=number]{width:105px;height:38px;background:#080808;color:#fff;border:1px solid #555;border-radius:7px;padding:7px;font-size:16px}
+input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #555;border-radius:7px;padding:2px}
+.apply{height:40px;padding:0 16px;font-weight:800}
+.messageRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.messageRow input[type=text]{width:min(420px,45vw);height:40px;background:#080808;color:#fff;border:1px solid #555;border-radius:7px;padding:7px 10px;font-size:16px}
+.msgBtn{height:40px;padding:0 18px;font-weight:800}
+@media(max-width:900px){
+ .app{padding:12px 14px;gap:9px}
+ .adjust{gap:5px}.adjust button{min-width:62px;height:40px;font-size:14px}
+ .brand .mmf{font-size:22px}.brand .timer{font-size:16px}.brand .company{font-size:9px}
+ .display{min-height:230px}.presets{grid-template-columns:repeat(5,1fr)}
+ .preset{height:42px;font-size:13px}.mainBtn{height:54px;width:170px}
+ .panel{padding:9px}.messageRow input[type=text]{width:calc(100vw - 210px)}
 }
 </style>
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <div>
-      <div class="brandMMF">MMF</div>
-      <div class="brandTimer">TIMER</div>
-      <div class="brandCompany">MULTIMEDIA FOCUS LLC</div>
-      <div id="status" class="status">READY</div>
+    <div class="brand">
+      <div class="mmf">MMF</div>
+      <div class="timer">TIMER</div>
+      <div class="company">MULTIMEDIA FOCUS LLC</div>
     </div>
     <div class="adjust">
-      <button type="button" class="btn" id="minus1">−1M</button>
-      <button type="button" class="btn" id="minus30">−30s</button>
-      <button type="button" class="btn" id="plus30">+30s</button>
-      <button type="button" class="btn" id="plus1">+1M</button>
+      <button onclick="MMF.adjust(-60)">−1M</button>
+      <button onclick="MMF.adjust(-30)">−30s</button>
+      <button onclick="MMF.adjust(30)">+30s</button>
+      <button onclick="MMF.adjust(60)">+1M</button>
     </div>
   </div>
 
   <div class="display" id="display">
-    <div id="timer" class="timer">00:00</div>
-    <div id="message" class="message"><div id="messageLines" class="messageLines"></div></div>
+    <div id="displayText">00:00</div>
   </div>
 
-  <div class="minutes">
-    <button type="button" class="btn preset" data-min="5">5 M</button>
-    <button type="button" class="btn preset" data-min="10">10 M</button>
-    <button type="button" class="btn preset" data-min="15">15 M</button>
-    <button type="button" class="btn preset" data-min="20">20 M</button>
-    <button type="button" class="btn preset" data-min="30">30 M</button>
-    <button type="button" class="btn preset" data-min="40">40 M</button>
-    <button type="button" class="btn preset" data-min="50">50 M</button>
-    <button type="button" class="btn preset" data-min="60">60 M</button>
-    <button type="button" class="btn preset" data-min="90">90 M</button>
-    <button type="button" class="btn" id="timeOfDay">TIME OF DAY</button>
+  <div class="controls">
+    <button id="startBtn" class="mainBtn start" onclick="MMF.startPause()">START</button>
+    <button class="mainBtn reset" onclick="MMF.reset()">RESET</button>
   </div>
 
-  <div class="mainControls">
-    <button type="button" class="btn" id="start">START</button>
-    <button type="button" class="btn" id="reset">RESET</button>
+  <div class="presets">
+    <button class="preset" onclick="MMF.set(5)">5 M</button>
+    <button class="preset" onclick="MMF.set(10)">10 M</button>
+    <button class="preset" onclick="MMF.set(15)">15 M</button>
+    <button class="preset" onclick="MMF.set(20)">20 M</button>
+    <button class="preset" onclick="MMF.set(30)">30 M</button>
+    <button class="preset" onclick="MMF.set(40)">40 M</button>
+    <button class="preset" onclick="MMF.set(50)">50 M</button>
+    <button class="preset" onclick="MMF.set(60)">60 M</button>
+    <button class="preset" onclick="MMF.set(90)">90 M</button>
+    <button class="preset" onclick="MMF.clock()">TIME OF DAY</button>
   </div>
 
-  <div class="custom">
-    <div class="customHeader" id="customHeader">▼ Customize Timer</div>
-    <div class="customBody" id="customBody">
-      <div class="settings">
-        <div class="field">
-          <label>Set Minutes</label>
-          <input id="customMinutes" type="number" min="1" step="1" placeholder="Minutes">
-        </div>
-        <div class="field">
-          <label>Background Color</label>
-          <input id="bg" type="color" value="#000000">
-        </div>
-        <div class="field">
-          <label>Text Color</label>
-          <input id="fg" type="color" value="#ffffff">
-        </div>
-      </div>
-      <div class="speaker">
-        <label>Speaker Message</label>
-        <div class="speakerRow">
-          <input id="speakerInput" type="text" placeholder="Type your message here...">
-          <button type="button" class="btn" id="show">SHOW</button>
-          <button type="button" class="btn" id="hide">HIDE</button>
-        </div>
-      </div>
+  <div class="panel">
+    <div class="panelTitle">Customize Timer</div>
+    <label>Time (minutes) <input id="customMinutes" type="number" min="0" step="1" placeholder="Minutes"></label>
+    <label>Background <input id="bgColor" type="color" value="#000000"></label>
+    <label>Text <input id="textColor" type="color" value="#ffffff"></label>
+    <button class="apply" onclick="MMF.applyCustom()">APPLY CUSTOM SETTINGS</button>
+    <div class="messageRow">
+      <label>Speaker Message <input id="speakerMessage" type="text" placeholder="WRAP UP / 2 MINUTES / Q&A"></label>
+      <button class="msgBtn" onclick="MMF.showMessage()">SHOW</button>
+      <button class="msgBtn" onclick="MMF.hideMessage()">HIDE</button>
     </div>
   </div>
 </div>
 
 <script>
 (function(){
-'use strict';
+  let remaining=0, baseDuration=0, running=false, timerId=null, messageVisible=false, clockMode=false;
+  const text=()=>document.getElementById('displayText');
+  const start=()=>document.getElementById('startBtn');
 
-var remaining = 0;
-var resetDuration = 0;
-var running = false;
-var timeOfDay = false;
-var messageVisible = false;
-var intervalId = null;
-
-var timer = document.getElementById('timer');
-var display = document.getElementById('display');
-var message = document.getElementById('message');
-var messageLines = document.getElementById('messageLines');
-var status = document.getElementById('status');
-var start = document.getElementById('start');
-var reset = document.getElementById('reset');
-var minus1 = document.getElementById('minus1');
-var minus30 = document.getElementById('minus30');
-var plus30 = document.getElementById('plus30');
-var plus1 = document.getElementById('plus1');
-var timeOfDayButton = document.getElementById('timeOfDay');
-var customMinutes = document.getElementById('customMinutes');
-var speakerInput = document.getElementById('speakerInput');
-var bg = document.getElementById('bg');
-var fg = document.getElementById('fg');
-var showButton = document.getElementById('show');
-var hideButton = document.getElementById('hide');
-var customHeader = document.getElementById('customHeader');
-var customBody = document.getElementById('customBody');
-
-function formatTime(seconds){
-  seconds = Math.max(0, Math.floor(seconds));
-  var m = Math.floor(seconds / 60);
-  var s = seconds % 60;
-  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
-
-function render(){
-  if(timeOfDay){
-    var d = new Date();
-    var h = d.getHours() % 12 || 12;
-    timer.textContent = String(h).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-  }else{
-    timer.textContent = formatTime(remaining);
+  function fmt(sec){
+    sec=Math.max(0,Math.floor(sec));
+    return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
   }
-}
-
-function stopTimer(){
-  running = false;
-  if(intervalId !== null){
-    clearInterval(intervalId);
-    intervalId = null;
+  function render(){
+    if(clockMode)return;
+    const el=text();
+    el.textContent=fmt(remaining);
+    el.style.fontSize='clamp(100px,18vw,230px)';
   }
-  start.textContent = 'START';
-}
-
-function tick(){
-  if(!running || timeOfDay) return;
-  remaining = Math.max(0, remaining - 1);
-  if(remaining === 0){
-    stopTimer();
-  }
-  if(!messageVisible) render();
-}
-
-function startOrPause(){
-  if(timeOfDay) return;
-  if(running){
-    stopTimer();
-    status.textContent = 'PAUSED';
-    return;
-  }
-  if(remaining <= 0) return;
-  running = true;
-  start.textContent = 'PAUSE';
-  status.textContent = 'RUNNING';
-  if(intervalId !== null) clearInterval(intervalId);
-  intervalId = setInterval(tick,1000);
-}
-
-function setDuration(seconds){
-  stopTimer();
-  remaining = Math.max(0, Math.floor(seconds));
-  resetDuration = remaining;
-  timeOfDay = false;
-  messageVisible = false;
-  message.style.display = 'none';
-  timer.style.display = 'block';
-  start.textContent = 'START';
-  status.textContent = 'READY';
-  render();
-}
-
-function adjust(seconds){
-  if(timeOfDay) return;
-  remaining = Math.max(0, remaining + seconds);
-  if(remaining === 0) stopTimer();
-  if(!messageVisible) render();
-}
-
-function escapeHTML(text){
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function textWidth(text,size){
-  var canvas = textWidth.canvas || (textWidth.canvas=document.createElement('canvas'));
-  var ctx = canvas.getContext('2d');
-  ctx.font = '900 ' + size + 'px Arial Black, Arial, sans-serif';
-  return ctx.measureText(text).width;
-}
-
-function fitMessage(){
-  var text = speakerInput.value.trim();
-  if(!text) return;
-  var words = text.split(/\s+/);
-  var width = Math.max(50, display.clientWidth - 20);
-  var height = Math.max(50, display.clientHeight - 16);
-  var best = null;
-
-  for(var size=190; size>=10; size--){
-    var lines = [];
-    var line = '';
-    for(var i=0;i<words.length;i++){
-      var word = words[i];
-      var test = line ? line + ' ' + word : word;
-      if(textWidth(test,size) <= width){
-        line = test;
-      }else{
-        if(line) lines.push(line);
-        line = word;
-      }
-    }
-    if(line) lines.push(line);
-
-    var fits = lines.every(function(x){ return textWidth(x,size) <= width; });
-    var totalHeight = lines.length * size * .9;
-    if(fits && totalHeight <= height){
-      best = {size:size,lines:lines};
-      break;
-    }
-  }
-
-  if(!best){
-    best = {size:10,lines:[text]};
-  }
-
-  messageLines.style.fontSize = best.size + 'px';
-  messageLines.innerHTML = best.lines.map(function(x){
-    return '<div>' + escapeHTML(x) + '</div>';
-  }).join('');
-}
-
-start.addEventListener('click', startOrPause);
-
-reset.addEventListener('click', function(){
-  if(resetDuration <= 0){
-    stopTimer();
-    remaining = 0;
-    timeOfDay = false;
-    messageVisible = false;
-    message.style.display = 'none';
-    timer.style.display = 'block';
-    status.textContent = 'READY';
+  function setMinutes(min){
+    stop();
+    clockMode=false;
+    messageVisible=false;
+    remaining=Math.max(0,Math.round(Number(min)*60));
+    baseDuration=remaining;
     render();
-    return;
+    start().textContent='START';
   }
-  stopTimer();
-  remaining = resetDuration;
-  timeOfDay = false;
-  messageVisible = false;
-  message.style.display = 'none';
-  timer.style.display = 'block';
-  status.textContent = 'READY';
-  render();
-});
-
-minus1.addEventListener('click', function(){ adjust(-60); });
-minus30.addEventListener('click', function(){ adjust(-30); });
-plus30.addEventListener('click', function(){ adjust(30); });
-plus1.addEventListener('click', function(){ adjust(60); });
-
-document.querySelectorAll('.preset').forEach(function(button){
-  button.addEventListener('click', function(){
-    setDuration(Number(button.getAttribute('data-min')) * 60);
-  });
-});
-
-timeOfDayButton.addEventListener('click', function(){
-  stopTimer();
-  timeOfDay = true;
-  messageVisible = false;
-  message.style.display = 'none';
-  timer.style.display = 'block';
-  status.textContent = 'TIME OF DAY';
-  render();
-});
-
-showButton.addEventListener('click', function(){
-  if(!speakerInput.value.trim()) return;
-  messageVisible = true;
-  timer.style.display = 'none';
-  message.style.display = 'flex';
-  fitMessage();
-  status.textContent = 'MESSAGE';
-});
-
-hideButton.addEventListener('click', function(){
-  messageVisible = false;
-  message.style.display = 'none';
-  timer.style.display = 'block';
-  status.textContent = running ? 'RUNNING' : 'READY';
-  render();
-});
-
-customHeader.addEventListener('click', function(){
-  var closed = customBody.style.display === 'none';
-  customBody.style.display = closed ? 'block' : 'none';
-  customHeader.textContent = closed ? '▼ Customize Timer' : '▶ Customize Timer';
-});
-
-customMinutes.addEventListener('change', function(){
-  var n = Number(customMinutes.value);
-  if(!Number.isFinite(n) || n <= 0) return;
-  setDuration(n * 60);
-});
-
-bg.addEventListener('input', function(){
-  document.body.style.background = bg.value;
-  display.style.background = bg.value;
-});
-
-fg.addEventListener('input', function(){
-  document.body.style.color = fg.value;
-  timer.style.color = fg.value;
-  messageLines.style.color = fg.value;
-});
-
-speakerInput.addEventListener('input', function(){
-  if(messageVisible) fitMessage();
-});
-
-window.addEventListener('resize', function(){
-  if(messageVisible) fitMessage();
-  render();
-});
-
-/* Prevent single-finger double-tap zoom; preserve two-finger pinch zoom. */
-var lastTap = 0;
-document.addEventListener('touchend', function(e){
-  var now = Date.now();
-  if(e.changedTouches && e.changedTouches.length === 1 && now-lastTap < 320){
-    e.preventDefault();
+  function stop(){
+    running=false;
+    if(timerId){clearInterval(timerId);timerId=null}
+    start().textContent='START';
   }
-  lastTap = now;
-},{passive:false});
+  function startPause(){
+    if(clockMode){ clock(); return; }
+    if(messageVisible) hideMessage();
+    if(running){stop();return}
+    running=true; start().textContent='PAUSE';
+    timerId=setInterval(()=>{
+      if(remaining>0){remaining--;render()}
+      else stop();
+    },1000);
+  }
+  function reset(){
+    stop();
+    clockMode=false;
+    messageVisible=false;
+    remaining=baseDuration;
+    render();
+  }
+  function adjust(delta){
+    if(clockMode) return;
+    remaining=Math.max(0,remaining+delta);
+    if(remaining>0) baseDuration=remaining;
+    render();
+  }
+  function clock(){
+    stop();
+    clockMode=true;
+    messageVisible=false;
+    const d=new Date();
+    let h=d.getHours()%12||12, m=d.getMinutes();
+    text().textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+    text().style.fontSize='clamp(100px,18vw,230px)';
+    timerId=setInterval(()=>{
+      const x=new Date(), hh=x.getHours()%12||12;
+      text().textContent=String(hh).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');
+    },1000);
+  }
+  function showMessage(){
+    const value=document.getElementById('speakerMessage').value.trim();
+    if(!value)return;
+    messageVisible=true;
+    clockMode=false;
+    const el=text();
+    el.textContent=value;
+    el.style.whiteSpace='normal';
+    el.style.overflowWrap='normal';
+    el.style.wordBreak='normal';
+    el.style.fontSize='clamp(32px,8vw,120px)';
+    fitMessage();
+  }
+  function hideMessage(){
+    messageVisible=false;
+    text().style.whiteSpace='nowrap';
+    render();
+  }
+  function fitMessage(){
+    const el=text(), value=el.textContent;
+    let size=Math.min(120,Math.max(28,window.innerWidth*.08));
+    el.style.fontSize=size+'px';
+    while(size>20 && (el.scrollWidth>el.clientWidth-20 || el.scrollHeight>el.clientHeight-20)){
+      size-=2; el.style.fontSize=size+'px';
+    }
+  }
+  function applyCustom(){
+    const mins=document.getElementById('customMinutes').value;
+    document.body.style.background=document.getElementById('bgColor').value;
+    document.getElementById('display').style.background=document.getElementById('bgColor').value;
+    document.getElementById('displayText').style.color=document.getElementById('textColor').value;
+    if(mins!=='') setMinutes(Number(mins));
+  }
+  window.addEventListener('resize',()=>{if(messageVisible)fitMessage()});
 
-render();
+  window.MMF={set:setMinutes,adjust,startPause,reset,clock,showMessage,hideMessage,applyCustom};
+  setMinutes(0);
 })();
 </script>
 </body>
