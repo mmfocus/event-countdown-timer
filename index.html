@@ -42,7 +42,7 @@ body{min-height:100vh;padding:8px 12px!important}
 .minutes{gap:5px!important;margin-bottom:6px!important}
 .minutes .btn{padding:7px 3px!important;font-size:13px!important;min-height:40px}
 .mainControls{gap:6px!important;margin-bottom:6px!important}
-.mainControls .btn{height:44px!important;font-size:15px!important}
+.mainControls .btn{height:50px!important;font-size:18px!important}
 .presentation{display:none!important}
 .custom{padding-top:4px!important}
 .customHeader{font-size:14px!important;margin-bottom:5px!important}
@@ -68,9 +68,20 @@ body{min-height:100vh;padding:8px 12px!important}
 .display{height:270px!important}
 .timer{font-weight:900!important;font-size:clamp(90px,15vw,200px)!important;letter-spacing:-6px!important}
 </style>
+
+<style id="mmf-brand-controls">
+.brandBlock{display:flex;flex-direction:column;align-items:flex-start;line-height:.8}
+.brandMMF{font-size:25px;font-weight:900;letter-spacing:-1px}
+.brandTimer{font-size:13px;font-weight:900;letter-spacing:4px;margin-top:3px;margin-bottom:7px}
+.mainControls #start{border-color:#18e45d;color:#fff;background:#003d18;font-weight:900}
+.mainControls #reset{border-color:#ff3030;color:#fff;background:#3b0000;font-weight:900}
+@media(max-width:700px){
+ .brandMMF{font-size:21px}.brandTimer{font-size:11px;letter-spacing:3px}
+}
+</style>
 </head>
 <body><div class="app">
-<div class="top"><div><div class="title">EVENT COUNTDOWN</div><div id="status" class="status">READY</div></div>
+<div class="top"><div class="brandBlock"><div class="brandMMF">MMF</div><div class="brandTimer">TIMER</div><div class="title">EVENT COUNTDOWN</div><div id="status" class="status">READY</div></div>
 <div class="adjust"><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button><button class="btn" id="minus1">−1M</button><button class="btn" id="plus1">+1M</button></div></div>
 <div class="display"><div class="displayInner"><div id="timer" class="timer">00:00</div>
 <div id="message" class="message"><div id="messageLines" class="messageLines"></div></div></div></div>
