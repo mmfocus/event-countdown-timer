@@ -126,9 +126,22 @@ body{background:#000!important;color:#fff!important;padding:8px 12px!important;f
  .speakerRow input{font-size:13px!important}
 }
 </style>
+
+<style id="approved-top-layout">
+.status{display:none!important}
+.brandMMF{font-family:Arial Black,Arial,sans-serif!important;font-weight:900!important}
+.brandTimer{font-family:Arial Black,Arial,sans-serif!important;font-weight:900!important}
+.brandCompany{font-family:Arial Black,Arial,sans-serif!important;font-weight:900!important}
+.adjust{gap:12px!important}
+.adjust .btn{min-width:92px!important;min-height:56px!important;padding:9px 18px!important;font-family:Arial Black,Arial,sans-serif!important;font-size:18px!important;font-weight:900!important}
+@media(max-width:700px){
+ .adjust{gap:7px!important}
+ .adjust .btn{min-width:72px!important;min-height:44px!important;padding:6px 10px!important;font-size:14px!important}
+}
+</style>
 </head>
 <body><div class="app">
-<div class="top"><div class="brandBlock"><div class="brandMMF">MMF</div><div class="brandTimer">TIMER</div><div class="brandCompany">MULTIMEDIA FOCUS LLC</div></div><div class="adjust"><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button><button class="btn" id="minus1">−1M</button><button class="btn" id="plus1">+1M</button></div></div>
+<div class="top"><div class="brandBlock"><div class="brandMMF">MMF</div><div class="brandTimer">TIMER</div><div class="brandCompany">MULTIMEDIA FOCUS LLC</div></div><div class="adjust"><button class="btn" id="minus1">−1M</button><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button><button class="btn" id="plus1">+1M</button></div></div>
 <div class="display"><div class="displayInner"><div id="timer" class="timer">00:00</div>
 <div id="message" class="message"><div id="messageLines" class="messageLines"></div></div></div></div>
 <div class="minutes">
