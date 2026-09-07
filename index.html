@@ -25,59 +25,65 @@
 .minutes{grid-template-columns:repeat(5,1fr);gap:6px}.minutes .btn{font-size:14px;padding:12px 3px}.settings{grid-template-columns:1fr 1fr}
 .speakerRow{grid-template-columns:1fr 1fr}.speakerRow input{grid-column:1/-1}.timer{letter-spacing:-4px}}
 </style>
-<style id="ipad-compact-layout">
+
+
+<style id="ipad-revision-layout">
 html,body{margin:0!important;padding:0!important;overflow:hidden!important}
-body{min-height:100vh;padding:10px!important}
+body{min-height:100vh;padding:8px 12px!important}
 .app{max-width:1100px!important;margin:0 auto!important}
-.top{margin-bottom:7px!important}
+.top{margin-bottom:6px!important}
 .title{font-size:15px!important;letter-spacing:1.7px!important}
-.status{font-size:12px!important;margin-top:3px!important}
-.adjust{gap:6px!important}
-.adjust .btn{padding:7px 14px!important;font-size:14px!important;min-height:40px}
-.display{height:180px!important;margin-bottom:8px!important;border-radius:16px!important}
-.timer{font-size:clamp(70px,13vw,170px)!important;letter-spacing:-5px!important}
+.status{font-size:12px!important;margin-top:2px!important}
+.adjust{gap:6px!important;flex-wrap:wrap}
+.adjust .btn{padding:6px 12px!important;font-size:13px!important;min-height:38px}
+.display{height:245px!important;margin-bottom:7px!important;border-radius:16px!important}
+.timer{font-size:clamp(82px,14vw,185px)!important;letter-spacing:-5px!important}
 .message{padding:4px!important}
-.minutes{gap:6px!important;margin-bottom:7px!important}
-.minutes .btn{padding:8px 4px!important;font-size:14px!important;min-height:42px}
-.mainControls{gap:6px!important;margin-bottom:7px!important}
-.mainControls .btn{height:46px!important;font-size:16px!important}
-.presentation{height:46px!important;margin-bottom:9px!important;font-size:15px!important}
-.custom{padding-top:6px!important}
-.customHeader{font-size:15px!important;margin-bottom:6px!important}
-.customBody{padding:9px!important;border-radius:12px!important}
-.settings{gap:10px!important;margin-bottom:8px!important}
-.field label{font-size:12px!important;margin-bottom:3px!important}
-.field input[type=number]{padding:7px!important;font-size:15px!important}
-.field input[type=color]{width:45px!important;height:34px!important}
-.speaker label{font-size:12px!important;margin-bottom:3px!important}
-.speakerRow{gap:6px!important}
-.speakerRow input{padding:8px!important;font-size:15px!important;min-height:40px}
-.speakerRow .btn{padding:7px 14px!important;min-height:40px!important}
-@media (orientation:portrait){
-  body{overflow:auto!important}
+.minutes{gap:5px!important;margin-bottom:6px!important}
+.minutes .btn{padding:7px 3px!important;font-size:13px!important;min-height:40px}
+.mainControls{gap:6px!important;margin-bottom:6px!important}
+.mainControls .btn{height:44px!important;font-size:15px!important}
+.presentation{display:none!important}
+.custom{padding-top:4px!important}
+.customHeader{font-size:14px!important;margin-bottom:5px!important}
+.customBody{padding:8px!important;border-radius:11px!important}
+.settings{gap:9px!important;margin-bottom:7px!important}
+.field label{font-size:11px!important;margin-bottom:2px!important}
+.field input[type=number]{padding:6px!important;font-size:14px!important}
+.field input[type=color]{width:42px!important;height:31px!important}
+.speaker label{font-size:11px!important;margin-bottom:2px!important}
+.speakerRow{gap:5px!important}
+.speakerRow input{padding:7px!important;font-size:14px!important;min-height:38px}
+.speakerRow .btn{padding:6px 12px!important;min-height:38px!important}
+@media(max-width:700px) and (orientation:landscape){
+  body{padding:6px 10px!important}
+  .display{height:220px!important}
+}
+@media(max-width:700px) and (orientation:portrait){
+  html,body{overflow:auto!important}
 }
 </style>
 </head>
 <body><div class="app">
 <div class="top"><div><div class="title">EVENT COUNTDOWN</div><div id="status" class="status">READY</div></div>
-<div class="adjust"><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button></div></div>
-<div class="display"><div class="displayInner"><div id="timer" class="timer">10:00</div>
+<div class="adjust"><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button><button class="btn" id="minus1">−1M</button><button class="btn" id="plus1">+1M</button></div></div>
+<div class="display"><div class="displayInner"><div id="timer" class="timer">00:00</div>
 <div id="message" class="message"><div id="messageLines" class="messageLines"></div></div></div></div>
 <div class="minutes">
 <button class="btn" data-min="5">5 M</button><button class="btn" data-min="10">10 M</button><button class="btn" data-min="15">15 M</button><button class="btn" data-min="20">20 M</button><button class="btn" data-min="30">30 M</button>
 <button class="btn" data-min="40">40 M</button><button class="btn" data-min="50">50 M</button><button class="btn" data-min="60">60 M</button><button class="btn" data-min="90">90 M</button><button class="btn" id="tod">TIME OF DAY</button>
 </div>
 <div class="mainControls"><button class="btn" id="start">START</button><button class="btn" id="reset">RESET</button></div>
-<button class="btn presentation" id="presentation">PRESENTATION MODE</button>
+
 <div class="custom"><div class="customHeader" id="customHeader">▼ Customize Timer</div><div class="customBody" id="customBody">
-<div class="settings"><div class="field"><label>Set Minutes</label><input id="customMinutes" type="number" min="1" value="10"></div>
+<div class="settings"><div class="field"><label>Set Minutes</label><input id="customMinutes" type="number" min="1" value="" placeholder="Minutes"></div>
 <div class="field"><label>Background Color</label><input id="bg" type="color" value="#000000"></div>
 <div class="field"><label>Text Color</label><input id="fg" type="color" value="#ffffff"></div></div>
 <div class="speaker"><label>Speaker Message</label><div class="speakerRow">
 <input id="speakerInput" type="text" placeholder="Type your message here..."><button class="btn" id="show">SHOW</button><button class="btn" id="hide">HIDE</button>
 </div></div></div></div></div>
 <script>
-let remaining=600,running=false,interval=null,timeOfDay=false,messageVisible=false;
+let remaining=0,resetDuration=0,running=false,interval=null,timeOfDay=false,messageVisible=false;
 const timer=document.getElementById('timer'),message=document.getElementById('message'),lines=document.getElementById('messageLines'),display=document.querySelector('.display'),status=document.getElementById('status'),start=document.getElementById('start');
 function format(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
 function render(){if(timeOfDay){const d=new Date();timer.textContent=String(d.getHours()%12||12).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}else timer.textContent=format(remaining)}
@@ -91,16 +97,16 @@ function fitMessage(){
  lines.style.fontSize=best.size+'px';
 }
 function tick(){if(!running||timeOfDay)return;remaining=Math.max(0,remaining-1);if(remaining===0){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='TIME'}if(!messageVisible)render()}
-start.onclick=()=>{if(timeOfDay)return;if(running){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='PAUSED'}else{if(remaining===0)remaining=600;running=true;start.textContent='PAUSE';status.textContent='RUNNING';clearInterval(interval);interval=setInterval(tick,1000)}};
-reset.onclick=()=>{running=false;clearInterval(interval);interval=null;remaining=600;timeOfDay=false;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='READY';render()};
-plus.onclick=()=>{if(!timeOfDay){remaining+=30;if(!messageVisible)render()}};
+start.onclick=()=>{if(timeOfDay)return;if(running){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='PAUSED'}else{if(remaining<=0)return;running=true;start.textContent='PAUSE';status.textContent='RUNNING';clearInterval(interval);interval=setInterval(tick,1000)}};
+reset.onclick=()=>{if(resetDuration<=0)return;running=false;clearInterval(interval);interval=null;remaining=resetDuration;timeOfDay=false;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='READY';render()};
+plus.onclick=()=>{if(!timeOfDay){remaining+=30;if(!messageVisible)render()}};minus1.onclick=()=>{if(!timeOfDay){remaining=Math.max(0,remaining-60);if(remaining===0){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='TIME'}if(!messageVisible)render()}};plus1.onclick=()=>{if(!timeOfDay){remaining+=60;if(!messageVisible)render()}};
 minus.onclick=()=>{if(!timeOfDay){remaining=Math.max(0,remaining-30);if(remaining===0){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='TIME'}if(!messageVisible)render()}};
-document.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{remaining=Number(b.dataset.min)*60;running=false;clearInterval(interval);interval=null;timeOfDay=false;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='READY';render()});
+document.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{remaining=Number(b.dataset.min)*60;resetDuration=remaining;running=false;clearInterval(interval);interval=null;timeOfDay=false;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='READY';render()});
 tod.onclick=()=>{timeOfDay=true;running=false;clearInterval(interval);interval=null;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='TIME OF DAY';render()};
 document.getElementById('show').onclick=()=>{if(!speakerInput.value.trim())return;messageVisible=true;timer.style.display='none';message.style.display='flex';fitMessage();status.textContent='MESSAGE'};
 document.getElementById('hide').onclick=()=>{messageVisible=false;message.style.display='none';timer.style.display='block';status.textContent=running?'RUNNING':(remaining===0?'TIME':'PAUSED');render()};
 customHeader.onclick=()=>{const b=document.getElementById('customBody');b.style.display=b.style.display==='none'?'block':'none';customHeader.textContent=b.style.display==='none'?'▶ Customize Timer':'▼ Customize Timer'};
-customMinutes.onchange=()=>{remaining=Math.max(1,Number(customMinutes.value)||10)*60;running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='READY';render()};
+customMinutes.onchange=()=>{const n=Number(customMinutes.value);if(!Number.isFinite(n)||n<=0)return;remaining=Math.max(1,n)*60;resetDuration=remaining;running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='READY';render()};
 bg.oninput=()=>{document.body.style.background=bg.value;display.style.background=bg.value};
 fg.oninput=()=>{document.body.style.color=fg.value;timer.style.color=fg.value;message.style.color=fg.value};
 presentation.onclick=()=>{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen()};
