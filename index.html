@@ -24,7 +24,40 @@
 @media(max-width:700px){body{padding:14px}.title{font-size:15px}.adjust .btn{padding:10px 13px;font-size:14px}.display{height:220px}
 .minutes{grid-template-columns:repeat(5,1fr);gap:6px}.minutes .btn{font-size:14px;padding:12px 3px}.settings{grid-template-columns:1fr 1fr}
 .speakerRow{grid-template-columns:1fr 1fr}.speakerRow input{grid-column:1/-1}.timer{letter-spacing:-4px}}
-</style></head>
+</style>
+<style id="ipad-compact-layout">
+html,body{margin:0!important;padding:0!important;overflow:hidden!important}
+body{min-height:100vh;padding:10px!important}
+.app{max-width:1100px!important;margin:0 auto!important}
+.top{margin-bottom:7px!important}
+.title{font-size:15px!important;letter-spacing:1.7px!important}
+.status{font-size:12px!important;margin-top:3px!important}
+.adjust{gap:6px!important}
+.adjust .btn{padding:7px 14px!important;font-size:14px!important;min-height:40px}
+.display{height:180px!important;margin-bottom:8px!important;border-radius:16px!important}
+.timer{font-size:clamp(70px,13vw,170px)!important;letter-spacing:-5px!important}
+.message{padding:4px!important}
+.minutes{gap:6px!important;margin-bottom:7px!important}
+.minutes .btn{padding:8px 4px!important;font-size:14px!important;min-height:42px}
+.mainControls{gap:6px!important;margin-bottom:7px!important}
+.mainControls .btn{height:46px!important;font-size:16px!important}
+.presentation{height:46px!important;margin-bottom:9px!important;font-size:15px!important}
+.custom{padding-top:6px!important}
+.customHeader{font-size:15px!important;margin-bottom:6px!important}
+.customBody{padding:9px!important;border-radius:12px!important}
+.settings{gap:10px!important;margin-bottom:8px!important}
+.field label{font-size:12px!important;margin-bottom:3px!important}
+.field input[type=number]{padding:7px!important;font-size:15px!important}
+.field input[type=color]{width:45px!important;height:34px!important}
+.speaker label{font-size:12px!important;margin-bottom:3px!important}
+.speakerRow{gap:6px!important}
+.speakerRow input{padding:8px!important;font-size:15px!important;min-height:40px}
+.speakerRow .btn{padding:7px 14px!important;min-height:40px!important}
+@media (orientation:portrait){
+  body{overflow:auto!important}
+}
+</style>
+</head>
 <body><div class="app">
 <div class="top"><div><div class="title">EVENT COUNTDOWN</div><div id="status" class="status">READY</div></div>
 <div class="adjust"><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button></div></div>
