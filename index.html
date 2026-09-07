@@ -1,211 +1,385 @@
-<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>MMF Timer</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='90' fill='%23000'/%3E%3Ctext x='256' y='225' text-anchor='middle' font-family='Arial,sans-serif' font-size='120' font-weight='800' fill='%23fff'%3EMMF%3C/text%3E%3Ctext x='256' y='350' text-anchor='middle' font-family='Arial,sans-serif' font-size='78' font-weight='800' fill='%23fff'%3ETIMER%3C/text%3E%3C/svg%3E">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;padding:24px}
-.app{max-width:1200px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.title{font-size:20px;font-weight:800;letter-spacing:2px}.status{font-size:16px;font-weight:700;margin-top:8px}.adjust{display:flex;gap:10px}
-.btn{background:#050505;color:#fff;border:2px solid #aaa;border-radius:14px;padding:13px 22px;font-size:17px;font-weight:700;cursor:pointer}
-.display{width:100%;height:300px;border:2px solid #777;border-radius:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:18px}
-.displayInner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.timer{font-size:clamp(100px,16vw,210px);font-weight:800;letter-spacing:-6px;line-height:.85;white-space:nowrap}
-.message{display:none;width:100%;height:100%;padding:10px;align-items:center;justify-content:center;font-weight:800;line-height:.9;overflow:hidden}
-.messageLines{width:100%;text-align:center}.messageLines div{white-space:nowrap}
-.minutes{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px}.minutes .btn{padding:14px 8px}
-.mainControls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.mainControls .btn{height:58px;font-size:18px}
-.presentation{width:100%;margin-bottom:22px;height:58px}.custom{border-top:1px solid #444;padding-top:15px}
-.customHeader{font-size:18px;font-weight:800;margin-bottom:15px;cursor:pointer}.customBody{display:block;border:1px solid #444;border-radius:18px;padding:18px}
-.settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px}
-.field label{display:block;font-size:14px;margin-bottom:7px}.field input[type=number]{width:100%;padding:12px;background:#050505;color:#fff;border:2px solid #777;border-radius:10px;font-size:18px}
-.field input[type=color]{width:58px;height:44px;background:#050505;border:2px solid #777;border-radius:10px}
-.speaker label{display:block;font-size:15px;margin-bottom:8px}.speakerRow{display:grid;grid-template-columns:1fr auto auto;gap:10px}
-.speakerRow input{width:100%;padding:14px;background:#050505;color:#fff;border:2px solid #777;border-radius:10px;font-size:16px}
-@media(max-width:700px){body{padding:14px}.title{font-size:15px}.adjust .btn{padding:10px 13px;font-size:14px}.display{height:220px}
-.minutes{grid-template-columns:repeat(5,1fr);gap:6px}.minutes .btn{font-size:14px;padding:12px 3px}.settings{grid-template-columns:1fr 1fr}
-.speakerRow{grid-template-columns:1fr 1fr}.speakerRow input{grid-column:1/-1}.timer{letter-spacing:-4px}}
-</style>
-
-
-<style id="ipad-revision-layout">
-html,body{margin:0!important;padding:0!important;overflow:hidden!important}
-body{min-height:100vh;padding:8px 12px!important}
-.app{max-width:1100px!important;margin:0 auto!important}
-.top{margin-bottom:6px!important}
-.title{font-size:15px!important;letter-spacing:1.7px!important}
-.status{font-size:12px!important;margin-top:2px!important}
-.adjust{gap:6px!important;flex-wrap:wrap}
-.adjust .btn{padding:6px 12px!important;font-size:13px!important;min-height:38px}
-.display{height:245px!important;margin-bottom:7px!important;border-radius:16px!important}
-.timer{font-size:clamp(82px,14vw,185px)!important;letter-spacing:-5px!important}
-.message{padding:4px!important}
-.minutes{gap:5px!important;margin-bottom:6px!important}
-.minutes .btn{padding:7px 3px!important;font-size:13px!important;min-height:40px}
-.mainControls{gap:6px!important;margin-bottom:6px!important}
-.mainControls .btn{height:50px!important;font-size:18px!important}
-.presentation{display:none!important}
-.custom{padding-top:4px!important}
-.customHeader{font-size:14px!important;margin-bottom:5px!important}
-.customBody{padding:8px!important;border-radius:11px!important}
-.settings{gap:9px!important;margin-bottom:7px!important}
-.field label{font-size:11px!important;margin-bottom:2px!important}
-.field input[type=number]{padding:6px!important;font-size:14px!important}
-.field input[type=color]{width:42px!important;height:31px!important}
-.speaker label{font-size:11px!important;margin-bottom:2px!important}
-.speakerRow{gap:5px!important}
-.speakerRow input{padding:7px!important;font-size:14px!important;min-height:38px}
-.speakerRow .btn{padding:6px 12px!important;min-height:38px!important}
-@media(max-width:700px) and (orientation:landscape){
-  body{padding:6px 10px!important}
-  .display{height:220px!important}
-}
-@media(max-width:700px) and (orientation:portrait){
-  html,body{overflow:auto!important}
-}
-</style>
-
-
-
-<style id="mmf-brand-controls">
-.brandBlock{display:flex;flex-direction:column;align-items:flex-start;line-height:.8}
-.brandMMF{font-size:25px;font-weight:900;letter-spacing:-1px}
-.brandTimer{font-size:13px;font-weight:900;letter-spacing:4px;margin-top:3px;margin-bottom:7px}
-.mainControls #start{border-color:#18e45d;color:#fff;background:#003d18;font-weight:900}
-.mainControls #reset{border-color:#ff3030;color:#fff;background:#3b0000;font-weight:900}
-@media(max-width:700px){
- .brandMMF{font-size:21px}.brandTimer{font-size:11px;letter-spacing:3px}
-}
-</style>
-
-
-
-<style id="mmf-reference-layout">
-html,body{margin:0!important;padding:0!important;overflow:hidden!important}
-body{background:#000!important;color:#fff!important;padding:8px 12px!important;font-family:Arial Black,Arial,Helvetica,sans-serif!important}
-.app{max-width:1200px!important;margin:0 auto!important}
-.top{margin-bottom:7px!important;align-items:flex-start!important}
-.brandBlock{display:flex!important;flex-direction:column!important;align-items:flex-start!important;line-height:.82!important}
-.brandMMF{font-family:Arial Black,Arial,sans-serif!important;font-size:34px!important;font-weight:900!important;letter-spacing:-2px!important}
-.brandTimer{font-family:Arial Black,Arial,sans-serif!important;font-size:16px!important;font-weight:900!important;letter-spacing:5px!important;margin-top:3px!important;margin-bottom:5px!important}
-.brandCompany{font-family:Arial Black,Arial,sans-serif!important;font-size:11px!important;font-weight:900!important;letter-spacing:1.5px!important}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;touch-action:pan-x pan-y pinch-zoom}
+body{padding:8px 12px}
+.app{width:100%;max-width:1200px;height:100%;margin:auto}
+.top{height:74px;display:flex;justify-content:space-between;align-items:flex-start}
+.brandMMF{font-family:Arial Black,Arial,sans-serif;font-size:34px;font-weight:900;line-height:.8;letter-spacing:-2px}
+.brandTimer{font-family:Arial Black,Arial,sans-serif;font-size:16px;font-weight:900;letter-spacing:5px;margin-top:4px;line-height:.8}
+.brandCompany{font-family:Arial Black,Arial,sans-serif;font-size:11px;font-weight:900;letter-spacing:1.4px;margin-top:7px}
+.adjust{display:flex;gap:12px}
+.btn{appearance:none;-webkit-appearance:none;background:#050505;color:#fff;border:2px solid #ddd;border-radius:14px;font-family:Arial Black,Arial,sans-serif;font-weight:900;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.btn:active{transform:scale(.98)}
+.adjust .btn{width:92px;height:56px;font-size:18px}
+.display{height:310px;width:100%;border:2px solid #ddd;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;margin-bottom:10px}
+.timer{font-family:Arial Black,Arial,sans-serif;font-weight:900;font-size:clamp(115px,16vw,230px);line-height:.8;letter-spacing:-7px;white-space:nowrap;color:#fff}
+.message{display:none;width:100%;height:100%;padding:5px;align-items:center;justify-content:center;overflow:hidden}
+.messageLines{width:100%;text-align:center;font-family:Arial Black,Arial,sans-serif;font-weight:900;line-height:.9}
+.messageLines div{white-space:nowrap}
+.minutes{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:8px}
+.minutes .btn{height:48px;font-size:17px}
+.mainControls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.mainControls .btn{height:64px;font-size:27px}
+#start{border:4px solid #00e84f;background:#003d16}
+#reset{border:4px solid #ff2028;background:#400000}
+.custom{border-top:1px solid #777;padding-top:6px}
+.customHeader{font-size:16px;font-weight:900;margin-bottom:6px;cursor:pointer}
+.customBody{border:2px solid #555;border-radius:13px;padding:10px}
+.settings{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:9px}
+.field label,.speaker label{display:block;font-size:13px;font-weight:900;margin-bottom:3px}
+.field input[type=number]{width:100%;padding:8px;background:#050505;color:#fff;border:2px solid #777;border-radius:10px;font-size:16px}
+.field input[type=color]{width:48px;height:38px;background:#050505;border:2px solid #777;border-radius:10px}
+.speakerRow{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+.speakerRow input{width:100%;padding:9px;background:#050505;color:#fff;border:2px solid #777;border-radius:10px;font-size:15px}
+.speakerRow .btn{min-width:90px;height:42px;font-size:15px}
 .status{display:none!important}
-.adjust{gap:12px!important}
-.adjust .btn{min-width:92px!important;min-height:56px!important;padding:9px 18px!important;font-size:18px!important;font-weight:900!important}
-.display{height:310px!important;margin-bottom:10px!important;border:2px solid #ddd!important;border-radius:18px!important;background:#000!important}
-.timer{font-family:Arial Black,Arial,Helvetica,sans-serif!important;font-weight:900!important;font-size:clamp(115px,16vw,230px)!important;letter-spacing:-7px!important;line-height:.82!important;color:#fff!important}
-.minutes{gap:7px!important;margin-bottom:8px!important}
-.minutes .btn{min-height:48px!important;padding:7px 4px!important;font-size:17px!important;font-weight:900!important}
-.mainControls{gap:10px!important;margin-bottom:8px!important}
-.mainControls .btn{height:64px!important;font-size:27px!important;font-weight:900!important;border-radius:14px!important}
-.mainControls #start{border:4px solid #00e84f!important;background:#003d16!important;color:#fff!important}
-.mainControls #reset{border:4px solid #ff2028!important;background:#400000!important;color:#fff!important}
-.custom{padding-top:6px!important;border-top:1px solid #777!important}
-.customHeader{font-size:16px!important;margin-bottom:6px!important}
-.customBody{padding:10px!important;border:2px solid #555!important;border-radius:13px!important}
-.settings{gap:18px!important;margin-bottom:9px!important}
-.field label,.speaker label{font-size:13px!important;font-weight:900!important}
-.field input[type=number]{padding:8px!important;font-size:16px!important}
-.field input[type=color]{width:48px!important;height:38px!important}
-.speakerRow{gap:8px!important}
-.speakerRow input{padding:9px!important;font-size:15px!important;min-height:42px!important}
-.speakerRow .btn{padding:8px 16px!important;min-height:42px!important;font-size:15px!important}
 @media(max-width:700px) and (orientation:landscape){
- body{padding:6px 10px!important}
- .brandMMF{font-size:25px!important}
- .brandTimer{font-size:12px!important;letter-spacing:4px!important}
- .brandCompany{font-size:9px!important}
- .adjust{gap:7px!important}
- .adjust .btn{min-width:72px!important;min-height:44px!important;padding:6px 10px!important;font-size:14px!important}
- .display{height:250px!important}
- .timer{font-size:clamp(95px,15vw,200px)!important}
- .minutes{gap:5px!important}
- .minutes .btn{min-height:42px!important;font-size:14px!important}
- .mainControls .btn{height:52px!important;font-size:21px!important}
- .customBody{padding:7px!important}
- .field label,.speaker label{font-size:11px!important}
- .speakerRow input{font-size:13px!important}
-}
-</style>
-
-<style id="approved-top-layout">
-.status{display:none!important}
-.brandMMF{font-family:Arial Black,Arial,sans-serif!important;font-weight:900!important}
-.brandTimer{font-family:Arial Black,Arial,sans-serif!important;font-weight:900!important}
-.brandCompany{font-family:Arial Black,Arial,sans-serif!important;font-weight:900!important}
-.adjust{gap:12px!important}
-.adjust .btn{min-width:92px!important;min-height:56px!important;padding:9px 18px!important;font-family:Arial Black,Arial,sans-serif!important;font-size:18px!important;font-weight:900!important}
-@media(max-width:700px){
- .adjust{gap:7px!important}
- .adjust .btn{min-width:72px!important;min-height:44px!important;padding:6px 10px!important;font-size:14px!important}
-}
-</style>
-<style id="remove-ready-final">.status{display:none!important}</style>
-<style id="ipad-zoom-protection">
-html,body{
-  touch-action:pan-x pan-y pinch-zoom;
-}
-button,input{
-  touch-action:manipulation;
+ body{padding:6px 10px}
+ .top{height:62px}
+ .brandMMF{font-size:25px}.brandTimer{font-size:12px;letter-spacing:4px}.brandCompany{font-size:9px;letter-spacing:1px}
+ .adjust{gap:7px}.adjust .btn{width:72px;height:44px;font-size:14px}
+ .display{height:250px}.timer{font-size:clamp(95px,15vw,200px)}
+ .minutes{gap:5px}.minutes .btn{height:42px;font-size:14px}
+ .mainControls .btn{height:52px;font-size:21px}
+ .customBody{padding:7px}.field label,.speaker label{font-size:11px}.speakerRow input{font-size:13px}
 }
 </style>
 </head>
-<body><div class="app">
-<div class="top"><div class="brandBlock"><div class="brandMMF">MMF</div><div class="brandTimer">TIMER</div><div class="brandCompany">MULTIMEDIA FOCUS LLC</div></div><div class="adjust"><button class="btn" id="minus1">−1M</button><button class="btn" id="minus">−30s</button><button class="btn" id="plus">+30s</button><button class="btn" id="plus1">+1M</button></div></div>
-<div class="display"><div class="displayInner"><div id="timer" class="timer">00:00</div>
-<div id="message" class="message"><div id="messageLines" class="messageLines"></div></div></div></div>
-<div class="minutes">
-<button class="btn" data-min="5">5 M</button><button class="btn" data-min="10">10 M</button><button class="btn" data-min="15">15 M</button><button class="btn" data-min="20">20 M</button><button class="btn" data-min="30">30 M</button>
-<button class="btn" data-min="40">40 M</button><button class="btn" data-min="50">50 M</button><button class="btn" data-min="60">60 M</button><button class="btn" data-min="90">90 M</button><button class="btn" id="tod">TIME OF DAY</button>
-</div>
-<div class="mainControls"><button class="btn" id="start">START</button><button class="btn" id="reset">RESET</button></div>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <div class="brandMMF">MMF</div>
+      <div class="brandTimer">TIMER</div>
+      <div class="brandCompany">MULTIMEDIA FOCUS LLC</div>
+      <div id="status" class="status">READY</div>
+    </div>
+    <div class="adjust">
+      <button type="button" class="btn" id="minus1">−1M</button>
+      <button type="button" class="btn" id="minus30">−30s</button>
+      <button type="button" class="btn" id="plus30">+30s</button>
+      <button type="button" class="btn" id="plus1">+1M</button>
+    </div>
+  </div>
 
-<div class="custom"><div class="customHeader" id="customHeader">▼ Customize Timer</div><div class="customBody" id="customBody">
-<div class="settings"><div class="field"><label>Set Minutes</label><input id="customMinutes" type="number" min="1" value="" placeholder="Minutes"></div>
-<div class="field"><label>Background Color</label><input id="bg" type="color" value="#000000"></div>
-<div class="field"><label>Text Color</label><input id="fg" type="color" value="#ffffff"></div></div>
-<div class="speaker"><label>Speaker Message</label><div class="speakerRow">
-<input id="speakerInput" type="text" placeholder="Type your message here..."><button class="btn" id="show">SHOW</button><button class="btn" id="hide">HIDE</button>
-</div></div></div></div></div>
+  <div class="display" id="display">
+    <div id="timer" class="timer">00:00</div>
+    <div id="message" class="message"><div id="messageLines" class="messageLines"></div></div>
+  </div>
+
+  <div class="minutes">
+    <button type="button" class="btn preset" data-min="5">5 M</button>
+    <button type="button" class="btn preset" data-min="10">10 M</button>
+    <button type="button" class="btn preset" data-min="15">15 M</button>
+    <button type="button" class="btn preset" data-min="20">20 M</button>
+    <button type="button" class="btn preset" data-min="30">30 M</button>
+    <button type="button" class="btn preset" data-min="40">40 M</button>
+    <button type="button" class="btn preset" data-min="50">50 M</button>
+    <button type="button" class="btn preset" data-min="60">60 M</button>
+    <button type="button" class="btn preset" data-min="90">90 M</button>
+    <button type="button" class="btn" id="timeOfDay">TIME OF DAY</button>
+  </div>
+
+  <div class="mainControls">
+    <button type="button" class="btn" id="start">START</button>
+    <button type="button" class="btn" id="reset">RESET</button>
+  </div>
+
+  <div class="custom">
+    <div class="customHeader" id="customHeader">▼ Customize Timer</div>
+    <div class="customBody" id="customBody">
+      <div class="settings">
+        <div class="field">
+          <label>Set Minutes</label>
+          <input id="customMinutes" type="number" min="1" step="1" placeholder="Minutes">
+        </div>
+        <div class="field">
+          <label>Background Color</label>
+          <input id="bg" type="color" value="#000000">
+        </div>
+        <div class="field">
+          <label>Text Color</label>
+          <input id="fg" type="color" value="#ffffff">
+        </div>
+      </div>
+      <div class="speaker">
+        <label>Speaker Message</label>
+        <div class="speakerRow">
+          <input id="speakerInput" type="text" placeholder="Type your message here...">
+          <button type="button" class="btn" id="show">SHOW</button>
+          <button type="button" class="btn" id="hide">HIDE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-let remaining=0,resetDuration=0,running=false,interval=null,timeOfDay=false,messageVisible=false;
-const timer=document.getElementById('timer'),message=document.getElementById('message'),lines=document.getElementById('messageLines'),display=document.querySelector('.display'),status=document.getElementById('status'),start=document.getElementById('start'),reset=document.getElementById('reset'),minus=document.getElementById('minus'),plus=document.getElementById('plus'),minus1=document.getElementById('minus1'),plus1=document.getElementById('plus1'),tod=document.getElementById('tod'),speakerInput=document.getElementById('speakerInput'),customMinutes=document.getElementById('customMinutes'),bg=document.getElementById('bg'),fg=document.getElementById('fg'),customHeader=document.getElementById('customHeader');
-function format(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
-function render(){if(timeOfDay){const d=new Date();timer.textContent=String(d.getHours()%12||12).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}else timer.textContent=format(remaining)}
-function measure(t,size){const c=document.createElement('canvas'),x=c.getContext('2d');x.font='800 '+size+'px Arial';return x.measureText(t).width}
-function fitMessage(){
- const width=display.clientWidth-20,height=display.clientHeight-20,words=document.getElementById('speakerInput').value.trim().split(/\s+/);let best=null;
- for(let size=200;size>=10;size--){let arr=[],line='';for(const word of words){const test=line?line+' '+word:word;if(measure(test,size)<=width)line=test;else{if(line)arr.push(line);line=word}}if(line)arr.push(line);
- if(arr.every(x=>measure(x,size)<=width)&&arr.length*size*.9<=height){best={size,arr};break}}
- if(!best){let size=10,arr=[],line='';for(const word of words){const test=line?line+' '+word:word;if(measure(test,size)<=width)line=test;else{if(line)arr.push(line);line=word}}if(line)arr.push(line);best={size,arr}}
- lines.innerHTML=best.arr.map(x=>'<div>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>').join('');
- lines.style.fontSize=best.size+'px';
-}
-function tick(){if(!running||timeOfDay)return;remaining=Math.max(0,remaining-1);if(remaining===0){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='TIME'}if(!messageVisible)render()}
-start.onclick=()=>{if(timeOfDay)return;if(running){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='PAUSED'}else{if(remaining<=0)return;running=true;start.textContent='PAUSE';status.textContent='RUNNING';clearInterval(interval);interval=setInterval(tick,1000)}};
-reset.onclick=()=>{if(resetDuration<=0){remaining=0;render();return;}running=false;clearInterval(interval);interval=null;remaining=resetDuration;timeOfDay=false;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='READY';render()};
-plus.onclick=()=>{if(!timeOfDay){remaining+=30;if(!messageVisible)render()}};minus1.onclick=()=>{if(!timeOfDay){remaining=Math.max(0,remaining-60);if(remaining===0){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='TIME'}if(!messageVisible)render()}};plus1.onclick=()=>{if(!timeOfDay){remaining+=60;if(!messageVisible)render()}};
-minus.onclick=()=>{if(!timeOfDay){remaining=Math.max(0,remaining-30);if(remaining===0){running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='TIME'}if(!messageVisible)render()}};
-document.querySelectorAll('[data-min]').forEach(b=>b.onclick=()=>{remaining=Number(b.dataset.min)*60;resetDuration=remaining;running=false;clearInterval(interval);interval=null;timeOfDay=false;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='READY';render()});
-tod.onclick=()=>{timeOfDay=true;running=false;clearInterval(interval);interval=null;messageVisible=false;message.style.display='none';timer.style.display='block';start.textContent='START';status.textContent='TIME OF DAY';render()};
-document.getElementById('show').onclick=()=>{if(!speakerInput.value.trim())return;messageVisible=true;timer.style.display='none';message.style.display='flex';fitMessage();status.textContent='MESSAGE'};
-document.getElementById('hide').onclick=()=>{messageVisible=false;message.style.display='none';timer.style.display='block';status.textContent=running?'RUNNING':(remaining===0?'TIME':'PAUSED');render()};
-customHeader.onclick=()=>{const b=document.getElementById('customBody');b.style.display=b.style.display==='none'?'block':'none';customHeader.textContent=b.style.display==='none'?'▶ Customize Timer':'▼ Customize Timer'};
-customMinutes.onchange=()=>{const n=Number(customMinutes.value);if(!Number.isFinite(n)||n<=0)return;remaining=Math.max(1,n)*60;resetDuration=remaining;running=false;clearInterval(interval);interval=null;start.textContent='START';status.textContent='READY';render()};
-bg.oninput=()=>{document.body.style.background=bg.value;display.style.background=bg.value};
-fg.oninput=()=>{document.body.style.color=fg.value;timer.style.color=fg.value;message.style.color=fg.value};
-presentation.onclick=()=>{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen()};
-window.addEventListener('resize',()=>{if(messageVisible)fitMessage()});render();
-</script>
-<script id="ipad-doubletap-protection">
 (function(){
-  let lastTap=0;
-  document.addEventListener('touchend',function(e){
-    const now=Date.now();
-    if(now-lastTap<320 && e.touches.length===0){
-      e.preventDefault();
+'use strict';
+
+var remaining = 0;
+var resetDuration = 0;
+var running = false;
+var timeOfDay = false;
+var messageVisible = false;
+var intervalId = null;
+
+var timer = document.getElementById('timer');
+var display = document.getElementById('display');
+var message = document.getElementById('message');
+var messageLines = document.getElementById('messageLines');
+var status = document.getElementById('status');
+var start = document.getElementById('start');
+var reset = document.getElementById('reset');
+var minus1 = document.getElementById('minus1');
+var minus30 = document.getElementById('minus30');
+var plus30 = document.getElementById('plus30');
+var plus1 = document.getElementById('plus1');
+var timeOfDayButton = document.getElementById('timeOfDay');
+var customMinutes = document.getElementById('customMinutes');
+var speakerInput = document.getElementById('speakerInput');
+var bg = document.getElementById('bg');
+var fg = document.getElementById('fg');
+var showButton = document.getElementById('show');
+var hideButton = document.getElementById('hide');
+var customHeader = document.getElementById('customHeader');
+var customBody = document.getElementById('customBody');
+
+function formatTime(seconds){
+  seconds = Math.max(0, Math.floor(seconds));
+  var m = Math.floor(seconds / 60);
+  var s = seconds % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function render(){
+  if(timeOfDay){
+    var d = new Date();
+    var h = d.getHours() % 12 || 12;
+    timer.textContent = String(h).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }else{
+    timer.textContent = formatTime(remaining);
+  }
+}
+
+function stopTimer(){
+  running = false;
+  if(intervalId !== null){
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+  start.textContent = 'START';
+}
+
+function tick(){
+  if(!running || timeOfDay) return;
+  remaining = Math.max(0, remaining - 1);
+  if(remaining === 0){
+    stopTimer();
+  }
+  if(!messageVisible) render();
+}
+
+function startOrPause(){
+  if(timeOfDay) return;
+  if(running){
+    stopTimer();
+    status.textContent = 'PAUSED';
+    return;
+  }
+  if(remaining <= 0) return;
+  running = true;
+  start.textContent = 'PAUSE';
+  status.textContent = 'RUNNING';
+  if(intervalId !== null) clearInterval(intervalId);
+  intervalId = setInterval(tick,1000);
+}
+
+function setDuration(seconds){
+  stopTimer();
+  remaining = Math.max(0, Math.floor(seconds));
+  resetDuration = remaining;
+  timeOfDay = false;
+  messageVisible = false;
+  message.style.display = 'none';
+  timer.style.display = 'block';
+  start.textContent = 'START';
+  status.textContent = 'READY';
+  render();
+}
+
+function adjust(seconds){
+  if(timeOfDay) return;
+  remaining = Math.max(0, remaining + seconds);
+  if(remaining === 0) stopTimer();
+  if(!messageVisible) render();
+}
+
+function escapeHTML(text){
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function textWidth(text,size){
+  var canvas = textWidth.canvas || (textWidth.canvas=document.createElement('canvas'));
+  var ctx = canvas.getContext('2d');
+  ctx.font = '900 ' + size + 'px Arial Black, Arial, sans-serif';
+  return ctx.measureText(text).width;
+}
+
+function fitMessage(){
+  var text = speakerInput.value.trim();
+  if(!text) return;
+  var words = text.split(/\s+/);
+  var width = Math.max(50, display.clientWidth - 20);
+  var height = Math.max(50, display.clientHeight - 16);
+  var best = null;
+
+  for(var size=190; size>=10; size--){
+    var lines = [];
+    var line = '';
+    for(var i=0;i<words.length;i++){
+      var word = words[i];
+      var test = line ? line + ' ' + word : word;
+      if(textWidth(test,size) <= width){
+        line = test;
+      }else{
+        if(line) lines.push(line);
+        line = word;
+      }
     }
-    lastTap=now;
-  },{passive:false});
+    if(line) lines.push(line);
+
+    var fits = lines.every(function(x){ return textWidth(x,size) <= width; });
+    var totalHeight = lines.length * size * .9;
+    if(fits && totalHeight <= height){
+      best = {size:size,lines:lines};
+      break;
+    }
+  }
+
+  if(!best){
+    best = {size:10,lines:[text]};
+  }
+
+  messageLines.style.fontSize = best.size + 'px';
+  messageLines.innerHTML = best.lines.map(function(x){
+    return '<div>' + escapeHTML(x) + '</div>';
+  }).join('');
+}
+
+start.addEventListener('click', startOrPause);
+
+reset.addEventListener('click', function(){
+  if(resetDuration <= 0){
+    stopTimer();
+    remaining = 0;
+    timeOfDay = false;
+    messageVisible = false;
+    message.style.display = 'none';
+    timer.style.display = 'block';
+    status.textContent = 'READY';
+    render();
+    return;
+  }
+  stopTimer();
+  remaining = resetDuration;
+  timeOfDay = false;
+  messageVisible = false;
+  message.style.display = 'none';
+  timer.style.display = 'block';
+  status.textContent = 'READY';
+  render();
+});
+
+minus1.addEventListener('click', function(){ adjust(-60); });
+minus30.addEventListener('click', function(){ adjust(-30); });
+plus30.addEventListener('click', function(){ adjust(30); });
+plus1.addEventListener('click', function(){ adjust(60); });
+
+document.querySelectorAll('.preset').forEach(function(button){
+  button.addEventListener('click', function(){
+    setDuration(Number(button.getAttribute('data-min')) * 60);
+  });
+});
+
+timeOfDayButton.addEventListener('click', function(){
+  stopTimer();
+  timeOfDay = true;
+  messageVisible = false;
+  message.style.display = 'none';
+  timer.style.display = 'block';
+  status.textContent = 'TIME OF DAY';
+  render();
+});
+
+showButton.addEventListener('click', function(){
+  if(!speakerInput.value.trim()) return;
+  messageVisible = true;
+  timer.style.display = 'none';
+  message.style.display = 'flex';
+  fitMessage();
+  status.textContent = 'MESSAGE';
+});
+
+hideButton.addEventListener('click', function(){
+  messageVisible = false;
+  message.style.display = 'none';
+  timer.style.display = 'block';
+  status.textContent = running ? 'RUNNING' : 'READY';
+  render();
+});
+
+customHeader.addEventListener('click', function(){
+  var closed = customBody.style.display === 'none';
+  customBody.style.display = closed ? 'block' : 'none';
+  customHeader.textContent = closed ? '▼ Customize Timer' : '▶ Customize Timer';
+});
+
+customMinutes.addEventListener('change', function(){
+  var n = Number(customMinutes.value);
+  if(!Number.isFinite(n) || n <= 0) return;
+  setDuration(n * 60);
+});
+
+bg.addEventListener('input', function(){
+  document.body.style.background = bg.value;
+  display.style.background = bg.value;
+});
+
+fg.addEventListener('input', function(){
+  document.body.style.color = fg.value;
+  timer.style.color = fg.value;
+  messageLines.style.color = fg.value;
+});
+
+speakerInput.addEventListener('input', function(){
+  if(messageVisible) fitMessage();
+});
+
+window.addEventListener('resize', function(){
+  if(messageVisible) fitMessage();
+  render();
+});
+
+/* Prevent single-finger double-tap zoom; preserve two-finger pinch zoom. */
+var lastTap = 0;
+document.addEventListener('touchend', function(e){
+  var now = Date.now();
+  if(e.changedTouches && e.changedTouches.length === 1 && now-lastTap < 320){
+    e.preventDefault();
+  }
+  lastTap = now;
+},{passive:false});
+
+render();
 })();
 </script>
-</body></html>
+</body>
+</html>
