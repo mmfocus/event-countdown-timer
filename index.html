@@ -112,9 +112,10 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
   }
   function render(){
-    if(clockMode)return;
+    if(clockMode || messageVisible)return;
     const el=text();
     el.textContent=fmt(remaining);
+    el.style.whiteSpace='nowrap';
     el.style.fontSize='clamp(100px,18vw,230px)';
   }
   function setMinutes(min){
@@ -137,8 +138,12 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     if(running){stop();return}
     running=true; start().textContent='PAUSE';
     timerId=setInterval(()=>{
-      if(remaining>0){remaining--;render()}
-      else stop();
+      if(remaining>0){
+        remaining--;
+        render();
+      } else {
+        stop();
+      }
     },1000);
   }
   function reset(){
@@ -177,20 +182,38 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     el.style.whiteSpace='normal';
     el.style.overflowWrap='normal';
     el.style.wordBreak='normal';
-    el.style.fontSize='clamp(32px,8vw,120px)';
+    el.style.hyphens='none';
     fitMessage();
   }
   function hideMessage(){
     messageVisible=false;
-    text().style.whiteSpace='nowrap';
+    const el=text();
+    el.style.whiteSpace='nowrap';
+    el.style.overflowWrap='normal';
+    el.style.wordBreak='normal';
+    el.style.hyphens='none';
     render();
   }
   function fitMessage(){
-    const el=text(), value=el.textContent;
-    let size=Math.min(120,Math.max(28,window.innerWidth*.08));
+    const el=text();
+    if(!messageVisible)return;
+
+    // Start very large and reduce only as much as necessary.
+    // Normal word wrapping is preserved: words are never split.
+    let size=Math.min(190, Math.max(52, Math.min(window.innerWidth, window.innerHeight)*0.16));
     el.style.fontSize=size+'px';
-    while(size>20 && (el.scrollWidth>el.clientWidth-20 || el.scrollHeight>el.clientHeight-20)){
-      size-=2; el.style.fontSize=size+'px';
+    el.style.whiteSpace='normal';
+    el.style.overflowWrap='normal';
+    el.style.wordBreak='normal';
+    el.style.hyphens='none';
+
+    const maxW=el.clientWidth-28;
+    const maxH=el.clientHeight-24;
+
+    // Fit to both width and height, keeping whole words together.
+    while(size>28 && (el.scrollWidth>maxW || el.scrollHeight>maxH)){
+      size-=2;
+      el.style.fontSize=size+'px';
     }
   }
   function applyCustom(){
