@@ -23,7 +23,7 @@ button{font:inherit;color:#fff;background:#080808;border:1px solid #555;border-r
 button:active{transform:scale(.98)}
 .adjust button{min-width:76px;height:46px;font-size:17px;font-weight:800}
 .display{flex:1;min-height:245px;border:1px solid #252525;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-#displayText{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 18px;font-weight:900;line-height:.88;letter-spacing:1px;font-size:clamp(100px,18vw,230px);white-space:nowrap}
+#displayText{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 18px;font-weight:900;line-height:.88;letter-spacing:1px;font-size:100px;white-space:nowrap}
 .controls{display:flex;justify-content:center;gap:16px}
 .mainBtn{width:210px;height:62px;font-size:23px;font-weight:900}
 .start{background:#19a84a;border-color:#19a84a}
@@ -111,12 +111,33 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     sec=Math.max(0,Math.floor(sec));
     return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
   }
+  // Measure the actual display rectangle, not the full iPad screen.
+  const measureCanvas=document.createElement('canvas');
+  const measure=measureCanvas.getContext('2d');
+  function displayBounds(){
+    const el=text();
+    return {w:Math.max(1,el.clientWidth-36),h:Math.max(1,el.clientHeight-28)};
+  }
+  function fitTimer(){
+    const el=text(), b=displayBounds(), value=el.textContent;
+    el.style.whiteSpace='nowrap';
+    el.style.wordBreak='normal';
+    el.style.overflowWrap='normal';
+    // Find the largest size that fits both width and height.
+    let lo=8,hi=Math.max(30,b.h*1.45);
+    for(let i=0;i<23;i++){
+      const mid=(lo+hi)/2;
+      measure.font='900 '+mid+'px Arial, Helvetica, sans-serif';
+      if(measure.measureText(value).width<=b.w && mid*.96<=b.h)lo=mid;
+      else hi=mid;
+    }
+    el.style.fontSize=lo+'px';
+  }
   function render(){
     if(clockMode || messageVisible)return;
     const el=text();
     el.textContent=fmt(remaining);
-    el.style.whiteSpace='nowrap';
-    el.style.fontSize='clamp(100px,18vw,230px)';
+    fitTimer();
   }
   function setMinutes(min){
     stop();
@@ -134,7 +155,6 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
   }
   function startPause(){
     if(clockMode){ clock(); return; }
-    if(messageVisible) hideMessage();
     if(running){stop();return}
     running=true; start().textContent='PAUSE';
     timerId=setInterval(()=>{
@@ -163,14 +183,13 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     stop();
     clockMode=true;
     messageVisible=false;
-    const d=new Date();
-    let h=d.getHours()%12||12, m=d.getMinutes();
-    text().textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-    text().style.fontSize='clamp(100px,18vw,230px)';
-    timerId=setInterval(()=>{
-      const x=new Date(), hh=x.getHours()%12||12;
-      text().textContent=String(hh).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');
-    },1000);
+    function paintClock(){
+      const d=new Date(),h=d.getHours()%12||12;
+      text().textContent=String(h).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      fitTimer();
+    }
+    paintClock();
+    timerId=setInterval(paintClock,1000);
   }
   function showMessage(){
     const value=document.getElementById('speakerMessage').value.trim();
@@ -195,26 +214,34 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     render();
   }
   function fitMessage(){
-    const el=text();
     if(!messageVisible)return;
-
-    // Start very large and reduce only as much as necessary.
-    // Normal word wrapping is preserved: words are never split.
-    let size=Math.min(190, Math.max(52, Math.min(window.innerWidth, window.innerHeight)*0.16));
-    el.style.fontSize=size+'px';
+    const el=text(), bounds=displayBounds();
+    const words=el.textContent.trim().split(/\s+/).filter(Boolean);
+    if(!words.length)return;
     el.style.whiteSpace='normal';
     el.style.overflowWrap='normal';
     el.style.wordBreak='normal';
     el.style.hyphens='none';
-
-    const maxW=el.clientWidth-28;
-    const maxH=el.clientHeight-24;
-
-    // Fit to both width and height, keeping whole words together.
-    while(size>28 && (el.scrollWidth>maxW || el.scrollHeight>maxH)){
-      size-=2;
-      el.style.fontSize=size+'px';
+    // Simulate normal word wrapping for each candidate font size.
+    // Use the largest size that keeps EVERY word whole and all lines in the box.
+    function fits(size){
+      measure.font='900 '+size+'px Arial, Helvetica, sans-serif';
+      let lines=1,line='';
+      for(const word of words){
+        if(measure.measureText(word).width>bounds.w)return false;
+        const candidate=line?line+' '+word:word;
+        if(measure.measureText(candidate).width<=bounds.w){line=candidate;}
+        else{lines++;line=word;}
+      }
+      return lines*size*.94<=bounds.h;
     }
+    let low=6,high=Math.max(bounds.w,bounds.h)*1.6;
+    for(let i=0;i<25;i++){
+      const mid=(low+high)/2;
+      if(fits(mid))low=mid;
+      else high=mid;
+    }
+    el.style.fontSize=Math.max(6,low-1)+'px';
   }
   function applyCustom(){
     const mins=document.getElementById('customMinutes').value;
@@ -223,7 +250,8 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     document.getElementById('displayText').style.color=document.getElementById('textColor').value;
     if(mins!=='') setMinutes(Number(mins));
   }
-  window.addEventListener('resize',()=>{if(messageVisible)fitMessage()});
+  window.addEventListener('resize',()=>{if(messageVisible)fitMessage();else if(clockMode)fitTimer();else render()});
+  if(window.ResizeObserver){new ResizeObserver(()=>{if(messageVisible)fitMessage();else if(clockMode)fitTimer();else render()}).observe(document.getElementById('display'));}
 
   window.MMF={set:setMinutes,adjust,startPause,reset,clock,showMessage,hideMessage,applyCustom};
   setMinutes(0);
