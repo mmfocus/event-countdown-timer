@@ -23,7 +23,7 @@ button{font:inherit;color:#fff;background:#080808;border:1px solid #555;border-r
 button:active{transform:scale(.98)}
 .adjust button{min-width:76px;height:46px;font-size:17px;font-weight:800}
 .display{flex:1;min-height:245px;border:1px solid #252525;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-#displayText{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 18px;font-weight:900;line-height:.88;letter-spacing:1px;font-size:100px;white-space:nowrap}
+#displayText{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 18px;font-weight:900;line-height:.88;letter-spacing:1px;font-size:100px;white-space:nowrap;min-width:0;min-height:0;overflow:hidden}
 .controls{display:flex;justify-content:center;gap:16px}
 .mainBtn{width:210px;height:62px;font-size:23px;font-weight:900}
 .start{background:#19a84a;border-color:#19a84a}
@@ -136,6 +136,8 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
   function render(){
     if(clockMode || messageVisible)return;
     const el=text();
+    el.replaceChildren();
+    el.style.flexDirection='row';
     el.textContent=fmt(remaining);
     fitTimer();
   }
@@ -185,6 +187,8 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     messageVisible=false;
     function paintClock(){
       const d=new Date(),h=d.getHours()%12||12;
+      text().replaceChildren();
+      text().style.flexDirection='row';
       text().textContent=String(h).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
       fitTimer();
     }
@@ -194,54 +198,77 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
   function showMessage(){
     const value=document.getElementById('speakerMessage').value.trim();
     if(!value)return;
+    // If displaying the clock, stop only its clock refresh interval.
+    // An ordinary running countdown must continue underneath the message.
+    if(clockMode){if(timerId){clearInterval(timerId);timerId=null;}clockMode=false;}
     messageVisible=true;
-    clockMode=false;
-    const el=text();
-    el.textContent=value;
-    el.style.whiteSpace='normal';
-    el.style.overflowWrap='normal';
-    el.style.wordBreak='normal';
-    el.style.hyphens='none';
     fitMessage();
   }
   function hideMessage(){
     messageVisible=false;
     const el=text();
+    el.replaceChildren();
     el.style.whiteSpace='nowrap';
-    el.style.overflowWrap='normal';
-    el.style.wordBreak='normal';
-    el.style.hyphens='none';
+    el.style.lineHeight='.9';
     render();
   }
   function fitMessage(){
     if(!messageVisible)return;
-    const el=text(), bounds=displayBounds();
-    const words=el.textContent.trim().split(/\s+/).filter(Boolean);
+    const el=text();
+    const raw=document.getElementById('speakerMessage').value.trim();
+    const words=raw.split(/\s+/).filter(Boolean);
     if(!words.length)return;
-    el.style.whiteSpace='normal';
-    el.style.overflowWrap='normal';
-    el.style.wordBreak='normal';
-    el.style.hyphens='none';
-    // Simulate normal word wrapping for each candidate font size.
-    // Use the largest size that keeps EVERY word whole and all lines in the box.
-    function fits(size){
-      measure.font='900 '+size+'px Arial, Helvetica, sans-serif';
-      let lines=1,line='';
+    const b=displayBounds();
+    // Reserve a generous margin, accounting for iPad Safari font metrics.
+    const width=Math.max(1,b.w-16),height=Math.max(1,b.h-16);
+    const font='Arial, Helvetica, sans-serif';
+    function measureText(s,size){measure.font='900 '+size+'px '+font;return measure.measureText(s).width;}
+    function layout(size,forceSingle){
+      let lines=[],line='';
       for(const word of words){
-        if(measure.measureText(word).width>bounds.w)return false;
-        const candidate=line?line+' '+word:word;
-        if(measure.measureText(candidate).width<=bounds.w){line=candidate;}
-        else{lines++;line=word;}
+        if(measureText(word,size)>width)return null;
+        const joined=line?line+' '+word:word;
+        if(!line || measureText(joined,size)<=width){line=joined;}
+        else if(forceSingle){return null;}
+        else{lines.push(line);line=word;}
       }
-      return lines*size*.94<=bounds.h;
+      if(line)lines.push(line);
+      if(lines.length*size*1.02>height)return null;
+      return lines;
     }
-    let low=6,high=Math.max(bounds.w,bounds.h)*1.6;
-    for(let i=0;i<25;i++){
-      const mid=(low+high)/2;
-      if(fits(mid))low=mid;
-      else high=mid;
+    // For one to three words, prefer a large SINGLE line if it fits.
+    // For longer text, choose the largest font that fits complete words
+    // into as many centered lines as the display rectangle permits.
+    const forceSingle=words.length<=3;
+    function solve(single){
+      let lo=4,hi=Math.max(width,height)*1.2,best=null;
+      for(let i=0;i<28;i++){
+        const mid=(lo+hi)/2,lines=layout(mid,single);
+        if(lines){lo=mid;best=lines;}else hi=mid;
+      }
+      return best?{size:Math.max(4,lo-2),lines:best}:null;
     }
-    el.style.fontSize=Math.max(6,low-1)+'px';
+    let result=forceSingle?solve(true):null;
+    if(!result)result=solve(false);
+    if(!result)return;
+    // Build explicit, unbreakable lines: Safari cannot introduce another
+    // wrap or push a line outside the display at the final font size.
+    el.replaceChildren();
+    el.style.display='flex';
+    el.style.flexDirection='column';
+    el.style.alignItems='center';
+    el.style.justifyContent='center';
+    el.style.whiteSpace='nowrap';
+    el.style.lineHeight='1';
+    el.style.fontSize=result.size+'px';
+    for(const line of result.lines){
+      const row=document.createElement('div');
+      row.textContent=line;
+      row.style.flex='0 0 auto';
+      row.style.maxWidth='100%';
+      row.style.whiteSpace='nowrap';
+      el.appendChild(row);
+    }
   }
   function applyCustom(){
     const mins=document.getElementById('customMinutes').value;
