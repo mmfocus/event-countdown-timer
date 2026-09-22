@@ -14,7 +14,9 @@ html,body{margin:0;width:100%;height:100%;background:#000;color:#fff;font-family
 body{touch-action:pan-x pan-y pinch-zoom}
 .app{width:100vw;height:100vh;min-height:620px;padding:18px 24px;display:flex;flex-direction:column;gap:12px}
 .top{display:flex;justify-content:space-between;align-items:flex-start;min-height:58px}
-.brand{line-height:1}
+.brand{line-height:1;display:flex;align-items:center;gap:14px}
+.brandLogo{width:64px;height:64px;object-fit:contain;flex:none}
+.brandCopy{display:flex;flex-direction:column}
 .brand .mmf{font-size:27px;font-weight:900;letter-spacing:1px}
 .brand .timer{font-size:20px;font-weight:900;letter-spacing:3px;margin-top:2px}
 .brand .company{font-size:11px;font-weight:700;letter-spacing:2px;margin-top:6px}
@@ -42,7 +44,7 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
 @media(max-width:900px){
  .app{padding:12px 14px;gap:9px}
  .adjust{gap:5px}.adjust button{min-width:62px;height:40px;font-size:14px}
- .brand .mmf{font-size:22px}.brand .timer{font-size:16px}.brand .company{font-size:9px}
+ .brandLogo{width:44px;height:44px}.brand .mmf{font-size:22px}.brand .timer{font-size:16px}.brand .company{font-size:9px}
  .display{min-height:230px}.presets{grid-template-columns:repeat(5,1fr)}
  .preset{height:42px;font-size:13px}.mainBtn{height:54px;width:170px}
  .panel{padding:9px}.messageRow input[type=text]{width:calc(100vw - 210px)}
@@ -53,9 +55,10 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
 <div class="app">
   <div class="top">
     <div class="brand">
-      <div class="mmf">MMF</div>
-      <div class="timer">TIMER</div>
-      <div class="company">MULTIMEDIA FOCUS LLC</div>
+      <img class="brandLogo" src="mf-logo.png" alt="Multimedia Focus logo">
+      <div class="brandCopy"><div class="mmf">MMF TIMER</div>
+      
+      <div class="company">MULTIMEDIA FOCUS LLC</div></div>
     </div>
     <div class="adjust">
       <button onclick="MMF.adjust(-60)">−1M</button>
@@ -220,7 +223,7 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
     if(!words.length)return;
     const b=displayBounds();
     // Reserve a generous margin, accounting for iPad Safari font metrics.
-    const width=Math.max(1,b.w-16),height=Math.max(1,b.h-16);
+    const width=Math.max(1,b.w-28),height=Math.max(1,b.h-28);
     const font='Arial, Helvetica, sans-serif';
     function measureText(s,size){measure.font='900 '+size+'px '+font;return measure.measureText(s).width;}
     function layout(size,forceSingle){
@@ -246,7 +249,7 @@ input[type=color]{width:55px;height:38px;background:#080808;border:1px solid #55
         const mid=(lo+hi)/2,lines=layout(mid,single);
         if(lines){lo=mid;best=lines;}else hi=mid;
       }
-      return best?{size:Math.max(4,lo-2),lines:best}:null;
+      return best?{size:Math.max(4,lo*0.94-2),lines:best}:null;
     }
     let result=forceSingle?solve(true):null;
     if(!result)result=solve(false);
